@@ -1,6 +1,6 @@
-# 游戏项目 Skill 仓库
+# 游戏项目工具箱 Skill
 
-一个可独立版本管理、跨项目安装的 Codex Skill：`game-project-toolkit`。
+本仓库本身就是一个可独立版本管理、跨项目安装的 Codex Skill：`game-project-toolkit`。根目录的 `SKILL.md` 是入口，不再包裹 `skills/game-project-toolkit/`。
 
 按需提供三项能力：
 
@@ -15,40 +15,76 @@
 ```text
 game-project-skills/
 ├─ README.md
-└─ skills/
-   └─ game-project-toolkit/
-      ├─ SKILL.md
-      ├─ agents/openai.yaml
-      └─ references/
-         ├─ ui-expand.md
-         ├─ icon-png.md
-         ├─ transparent-atlas.md
-         └─ ai-gamex-example.md
+├─ SKILL.md
+├─ agents/openai.yaml
+└─ references/
+   ├─ ui-expand.md
+   ├─ icon-png.md
+   ├─ transparent-atlas.md
+   └─ ai-gamex-example.md
 ```
 
-安装单元是 `skills/game-project-toolkit` 整个文件夹。Skill 内部链接均为相对路径，无需访问原参考项目。
+Skill 内部链接均为相对路径，无需访问原参考项目。单个 Skill 放在仓库根目录便于直接安装；只有一个仓库需要容纳多个独立 Skill 时，才需要 `skills/<name>/` 这样的集合结构。
 
 ## 安装到 Codex
 
-将上述文件夹复制到个人技能目录：默认 `~/.codex/skills/`；配置了 `CODEX_HOME` 时，使用其下的 `skills/`。后续在新会话中检查该技能是否出现在可用列表；客户端未刷新时重开会话或应用。
+安装目标是个人技能目录下的 `game-project-toolkit`：默认 `~/.codex/skills/game-project-toolkit/`；配置了 `CODEX_HOME` 时，使用其下的 `skills/game-project-toolkit/`。
 
-以下 PowerShell 示例用于**从本仓库根目录首次安装**，已有同名技能时停止，避免意外覆盖：
+### 从 GitHub 地址安装
+
+将仓库发布到 GitHub 后，可以直接向 Codex 提出：
+
+> 使用 $skill-installer，从 https://github.com/OWNER/game-project-toolkit 安装技能。SKILL.md 位于仓库根目录，安装名称为 game-project-toolkit。
+
+这里的 `OWNER/game-project-toolkit` 是示例地址，需要替换为实际仓库。创建本地仓库不等于已经发布到该地址。
+
+Codex 自带的 GitHub 安装器需要选择仓库中的技能路径。根目录使用 `--path .`，并显式指定 `--name game-project-toolkit`，避免把 `.` 当作技能名称。仓库名称可以不同于技能名称。
+
+在安装了系统 `skill-installer` 的 Codex 环境中，PowerShell 示例：
 
 ```powershell
-$toolkitSkillRoot = if ($env:CODEX_HOME) {
-    Join-Path $env:CODEX_HOME 'skills'
+$toolkitCodexRoot = if ($env:CODEX_HOME) {
+    $env:CODEX_HOME
 } else {
-    Join-Path $env:USERPROFILE '.codex\skills'
+    Join-Path $env:USERPROFILE '.codex'
 }
+$toolkitInstaller = Join-Path $toolkitCodexRoot 'skills\.system\skill-installer\scripts\install-skill-from-github.py'
+python $toolkitInstaller --url https://github.com/OWNER/game-project-toolkit --path . --name game-project-toolkit
+```
+
+可用 `--ref` 指定已发布的分支、标签或提交。私有仓库需要当前环境已经具备访问权限。该安装器针对 GitHub，不等于任意 Git 托管平台都支持同一 URL 安装流程。
+
+### 从其他 Git 服务安装
+
+GitLab、自建 Git 或其他可克隆地址，可将仓库直接克隆到个人技能目录下，以 `game-project-toolkit` 作为目录名。目标存在时不要覆盖现有安装。
+
+```powershell
+$toolkitCodexRoot = if ($env:CODEX_HOME) { $env:CODEX_HOME } else { Join-Path $env:USERPROFILE '.codex' }
+$toolkitSkillRoot = Join-Path $toolkitCodexRoot 'skills'
+$toolkitDestination = Join-Path $toolkitSkillRoot 'game-project-toolkit'
+if (Test-Path -LiteralPath $toolkitDestination) { throw '目标技能已存在，请先比较差异并安排更新。' }
+New-Item -ItemType Directory -Path $toolkitSkillRoot -Force | Out-Null
+git clone 'https://你的Git服务/你的账号/game-project-toolkit.git' $toolkitDestination
+```
+
+先将示例 URL 替换为实际地址，再运行命令。克隆方式保留 Git 历史，后续可按需更新；通过安装器下载的副本不应假定能直接 `git pull`。
+
+### 从本地仓库安装
+
+以下 PowerShell 示例从本仓库根目录复制技能必需内容，不复制 Git 元数据；已有同名技能时停止：
+
+```powershell
+$toolkitCodexRoot = if ($env:CODEX_HOME) { $env:CODEX_HOME } else { Join-Path $env:USERPROFILE '.codex' }
+$toolkitSkillRoot = Join-Path $toolkitCodexRoot 'skills'
 $toolkitDestination = Join-Path $toolkitSkillRoot 'game-project-toolkit'
 if (Test-Path -LiteralPath $toolkitDestination) {
     throw '目标技能已存在，请先比较差异并安排更新。'
 }
-New-Item -ItemType Directory -Path $toolkitSkillRoot -Force | Out-Null
-Copy-Item -LiteralPath '.\skills\game-project-toolkit' -Destination $toolkitDestination -Recurse
+New-Item -ItemType Directory -Path $toolkitDestination -Force | Out-Null
+Copy-Item -LiteralPath @('.\SKILL.md', '.\agents', '.\references') -Destination $toolkitDestination -Recurse
 ```
 
-安装步骤与创建仓库分开执行。本仓库本身不修改任何其他项目或个人设置。
+安装完成后，下一个回合检查技能是否出现在可用列表；客户端未刷新时重开会话或应用。安装步骤与创建仓库分开执行。
 
 ## 使用
 
