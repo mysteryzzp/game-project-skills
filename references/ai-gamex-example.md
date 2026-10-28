@@ -35,7 +35,7 @@ Web 小游戏合集，使用 TypeScript、PixiJS 8、`@pixi/layout` 和 Vite。�
 - `src/core/resources.ts` 按同一逻辑名称返回 PixiJS Texture，内部区分单图与图集帧，复用并发请求和图集解析。
 - 业务场景无需知道图集名或帧位置。
 
-可复用的是稳定标识、按规则合图、构建映射与加载接入的分工。Vite 虚拟模块、PixiJS 的 Spritesheet API 和会话级缓存都需要按新项目重新判断。
+可复用的是稳定标识、按规则合图、构建映射与加载接入的分工。Vite 虚拟模块和 PixiJS 的 Spritesheet API 都需要按新项目重新判断。
 
 如果在相同工具链中参考这条路线，构建插件、虚拟模块声明、加载器与构建配置必须协调接入，不能仅复制加载器就假定图集已经透明可用。
 
@@ -46,7 +46,6 @@ Web 小游戏合集，使用 TypeScript、PixiJS 8、`@pixi/layout` 和 Vite。�
 - 普通图片一律允许变形填满，不提供 contain/cover。
 - 所有 UI 必须由 PixiJS 绘制，必须使用 `@pixi/layout`。
 - 图标必须白色、必须使用 Phosphor。
-- 已加载纹理一律保留到会话结束。
 - 必须采用特定游戏目录结构、构建命令或相同设计尺寸。
 
 案例只记录设计与已存在的检查入口，本次 Skill 提炼未重新执行参考项目的运行时测试，不代表已验证其他引擎。
