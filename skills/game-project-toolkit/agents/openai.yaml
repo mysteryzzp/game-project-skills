@@ -1,0 +1,4 @@
+interface:
+  display_name: "游戏项目工具箱"
+  short_description: "按需接入引擎无关的 Expand 适配、开源图标 PNG 与透明图集"
+  default_prompt: "使用 $game-project-toolkit，根据当前项目引擎和需求，按需实现 Expand 适配、图标 PNG 或透明图集。"
