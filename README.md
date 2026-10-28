@@ -1,6 +1,6 @@
 # 游戏项目工具箱 Skill
 
-本仓库本身就是一个可独立版本管理、跨项目安装的 Codex Skill：`game-project-toolkit`。根目录的 `SKILL.md` 是入口，不再包裹 `skills/game-project-toolkit/`。
+本仓库本身就是一个可独立版本管理、跨项目安装的 Codex Skill：`game-project-toolkit`。根目录的 `SKILL.md` 是入口。
 
 按需提供三项能力：
 
